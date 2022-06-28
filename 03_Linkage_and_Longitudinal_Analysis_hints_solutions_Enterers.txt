@@ -1,0 +1,76 @@
+######################### CHECKPOINT 1 #########################
+check_1.hint <- function() {
+writeLines("1. The first blank refers to the name of your cohort of TANF starters that you created in 02_Creating_a_cohort_checkpoints.ipynb. You are encouraged to revisit this.
+2. This is based on what you chose in the checkpoints notebook for creating a cohort. The format for this is 'YYYY Q#' where YYYY refers to the year and # refers to the quarter number. For example: If you chose recipients who started TANF in the second quarter of 2017, you will enter '2017 Q2' in the blank below.")
+}
+
+check_1.solution <- function() {
+    qry_to_disp = paste0("qry <- \"SELECT pmc.*
+FROM tr_tdc_2022.dbo.team5_cohort_rukhshan_start cts
+JOIN tr_tdc_2022.dbo.person_month_clean pmc
+ON cts.ssn = pmc.ssn
+WHERE yr_quarter <= '2017 Q2' AND pmc.tanf_start = 1\"")
+    writeLines(qry_to_disp)
+}
+
+######################### CHECKPOINT 2 #########################
+check_2.hint <- function() {
+    writeLines("Use the variable associated with social security number to fill in the blank.")
+}
+
+
+check_2.solution <- function() {
+    qry_to_disp <- paste0("cohort_spells <- cohort %>% 
+    group_by(ssn) %>% 
+    summarise(count_spells = n()) %>%
+    mutate(in_tanf_before = ifelse(count_spells > 1, 'Yes', 'No'))")
+    writeLines(qry_to_disp)
+    }
+
+######################### CHECKPOINT 3 #########################
+
+check_3.hint <- function() {
+    writeLines("Fill in the blank with the variable we just created above that helps us identify whether or not someone was in TANF before.")
+}
+
+check_3.solution <- function() {
+     qry_to_disp <- "cohort_spells %>% 
+    inner_join(cohort, by='ssn') %>% 
+    arrange(ssn, desc(yr_month)) %>%
+    distinct(ssn, .keep_all=T) %>%
+    group_by(in_tanf_before) %>%
+    summarise(count_individuals = n(),
+        average_months = mean(tanf_total_months), 
+              median_months = median(tanf_total_months))"
+    writeLines(qry_to_disp)
+}
+
+######################### CHECKPOINT 4 #########################
+
+check_4.hint <- function() {
+    writeLines("The first and last blanks refer to the name of the table that you created in the checkpoints notebook (02_Creating_a_cohort.ipynb). It has the format: team#_cohort_name where # refers to your team number and name refers to your name. For the remaining blanks, you may utilize the following example: 
+When creating your cohort, if you only kept recipients who started TANF in the second quarter (2) of 2017, you would want to keep wage records between between (but not inclusive of) **yr_quarter = 2016 Q1** and **yr_quarter = 2017 Q2**. Thus, you would fill in the blanks with '2016 Q2', '2016 Q3', '2016 Q4', '2017 Q1'.")
+}
+
+check_4.solution <- function() {
+   writeLines("qry <- \"SELECT nb.*, wr.Empr_no, wr.Wage, wr.yr_quarter
+    FROM (tr_tdc_2022.dbo.team5_cohort_rukhshan_start nb
+    LEFT JOIN 
+    (SELECT SSN, Empr_no, yr_quarter, Wage 
+    FROM tr_tdc_2022.dbo.wages_tanf
+    WHERE yr_quarter IN ('2016 Q2', '2016 Q3','2016 Q4', '2017 Q1')
+    AND (SSN IN (SELECT DISTINCT SSN FROM tr_tdc_2022.dbo.team5_cohort_rukhshan))) wr
+    ON wr.SSN=nb.SSN)\"")
+}
+
+######################### CHECKPOINT 5 #########################
+
+check_5.hint <- function() {
+    writeLines("Update the blank with the variable associated with wages. This is similar to what you saw in 03_Linkage_and_Longitudinal_Analysis.ipynb.")
+}
+
+check_5.solution <- function() {
+   writeLines("tot_wages <- cohort_wages_first_tanf %>% 
+    group_by(caseid, yr_quarter) %>% 
+    summarise(totalwages=sum(Wage))")
+}

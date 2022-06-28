@@ -1,0 +1,53 @@
+######################### CHECKPOINT 1 #########################
+check_1.hint <- function() {
+writeLines("Update the first blank with the year-quarter combination of your choice. Remember, this is in the format '2017 Q2' (this corresponds to the second quarter of 2017). The second blank corresponds to either tanf_start or tanf_end. You can type in either one of them.")
+}
+
+check_1.solution <- function() {
+    qry_to_disp = paste0("query <- \"SELECT ssn, caseid, dob, yr_month, welig, affil, tanf_total_months, tanf_start, tanf_end, hispan, native, asian, black, hawaia, white, county
+FROM tr_tdc_2022.dbo.person_month_clean
+WHERE yr_quarter = '2017 Q2'  AND tanf_end = 1\"")
+    writeLines(qry_to_disp)
+}
+
+######################### CHECKPOINT 2 #########################
+check_2.hint <- function() {
+    writeLines("1. For the first blank, fill in the last date associated with the year-quarter combination of your choice in the following format: YYYY/MM/DD. That is, if you chose 2017 Q1 in the first checkpoint as your year-quarter combination of interest, you will enter '2021/03/31' in the first blank (within the double quotations).
+
+2. Fill in the second blank with the age cutoff of your choice. The next two blanks correspond to the category names. For example: If your age cutoff is 16, you category names can be \"Age>=15\", \"Age < 15\".")
+}
+
+
+check_2.solution <- function() {
+    qry_to_disp <- paste0("tanf_cohort_clean <- tanf_cohort_clean %>%
+    mutate(
+        # fill in the blank for your year-quarter combination of interest in: 'YYYY/MM/DD'
+        age_at_event = trunc((dob %--% ymd('2017/06/30')) / years(1)),
+        # fill in the blank with the age cutoff of your choice. Define categories accordingly. 
+        age_ind = ifelse(age_at_event >= 16, 'Age >= 16', 'Age < 16')
+    )%>%
+    filter(age_at_event >=16)")
+    writeLines(qry_to_disp)
+    }
+
+######################### CHECKPOINT 3 #########################
+
+check_3.hint <- function() {
+    writeLines("Fill in the blanks with the values for affil you would like to keep in your cohort. The 3 blanks are placeholders and it is not necessary for you to fill in all 3. For example: if you want to keep affil = 1 and affil = 2, you can just remove the third blank. If you would like to keep 4 values, you can add an extra blank.")
+}
+
+check_3.solution <- function() {
+     qry_to_disp <- "tanf_cohort_clean <- tanf_cohort_clean %>%
+    filter(affil %in% c(1, 2, 3))"
+    writeLines(qry_to_disp)
+}
+
+######################### CHECKPOINT 4 #########################
+
+check_4.hint <- function() {
+    writeLines("Fill in the blank in the following format: cohort_team#_name where # refers to your team number and name refers to your name. For example: team3_cohort_sarah")
+}
+
+check_4.solution <- function() {
+    
+}

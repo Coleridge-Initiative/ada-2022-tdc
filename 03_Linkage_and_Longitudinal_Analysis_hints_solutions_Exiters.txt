@@ -1,0 +1,76 @@
+######################### CHECKPOINT 1 #########################
+check_1.hint <- function() {
+writeLines("
+1. Fill in the first blank with the name of your cohort that you created in `02_Creating_a_cohort_checkpoints.ipynb` (format: team#_cohort_name where # refers to your team number and name refers to your name. You may also go through 02_Creating_a_cohort_checkpoints.ipynb to see what you saved your cohort.)
+
+2. In the `03_Linkage_and_Longitidunal_Analysis.ipynb` notebook, we are looking at employment outcomes for individuals who exited TANF during 2018 Q2 so we are pulling in the wage from 2018 Q2 throught 2019 Q3. If you used a similar cohort, you will fill out '2018 Q2', '2018 Q3', '2018 Q4', '2019 Q1', '2019 Q2', '2019 Q3' in the blanks provided. However, these dates may change based on how you defined your cohort. We have provided another example in this checkpoint's solution.
+
+3. Fill in the last blank with the name of your cohort that you created in `02_Creating_a_cohort_checkpoints.ipynb`. (Same as 1 above)")
+}
+
+check_1.solution <- function() {
+    qry_to_disp = paste0("qry <- \"SELECT nb.*, wr.Empr_no, wr.Wage, wr.yr_quarter
+    FROM (tr_tdc_2022.dbo.team5_cohort_rukhshan nb
+    LEFT JOIN 
+    (SELECT SSN, Empr_no, yr_quarter, Wage 
+    FROM tr_tdc_2022.dbo.wages_tanf
+    WHERE (yr_quarter IN ('2017 Q2', '2017 Q3', '2017 Q4', '2018 Q1', '2018 Q2', '2018 Q3')) 
+    AND (SSN IN (SELECT DISTINCT SSN FROM tr_tdc_2022.dbo.team5_cohort_rukhshan))) wr
+    ON wr.SSN=nb.SSN)\"")
+    writeLines(qry_to_disp)
+}
+
+check_1.additional <- function() {
+    qry_to_disp = paste0("query <- \"SELECT nb.*, wr.Empr_no, wr.Wage, wr.Year, wr.Quarter
+    FROM (tr_tdc_2022.dbo.team5_cohort_rukhshan nb
+    LEFT JOIN 
+    (SELECT SSN, Empr_no, Year, Quarter, Wage 
+    FROM tr_tdc_2022.dbo.wages_tanf
+    WHERE ((Year=2015 AND Quarter >=2) OR 
+            (Year BETWEEN 2016 AND 2017) OR
+            (Year=2018 AND Quarter <=3)
+        ) 
+    AND (SSN IN (SELECT DISTINCT SSN FROM tr_tdc_2022.dbo.team5_cohort_rukhshan))) wr
+    ON wr.SSN=nb.SSN)\"")
+    writeLines("Taking into account all quarters between the second quarter of 2015 and third quarter of 2018:")
+    writeLines(" ")
+    writeLines(qry_to_disp)
+}
+
+######################### CHECKPOINT 2 #########################
+check_2.hint <- function() {
+    writeLines("Fill in the blank with the quarter of exit you chose for your cohort. This is the quarter you used to define your cohort.")
+}
+
+
+check_2.solution <- function() {
+    qry_to_disp <- paste0("tot_q_emp <- tot_wages %>% 
+    filter(yr_quarter != '2017 Q2' | is.na(yr_quarter)) %>%
+    group_by(ssn) %>%
+    summarise(quarters_employed= sum(!is.na(totalwages)))
+")
+    writeLines(qry_to_disp)
+    }
+
+######################### CHECKPOINT 3 #########################
+
+check_3.hint <- function() {
+    writeLines("Fill in the blank with the year-quarter combination that you used to define your cohort. We encourage you to refer to 02_Creating_a_cohort_checkpoints.ipynb to see the year and quarter combination you used. The format is 'YYYY Q#' where # refers to the quarter number.
+")
+}
+
+check_3.solution <- function() {
+     qry_to_disp <- "emp_measures <- emp_measures %>% 
+        mutate(new_emp = ifelse(TIME == min(TIME) & yr_quarter > '2017 Q2',1,0), # first record of grouping is a new job
+           time_change_emp = TIME-lag(TIME), 
+           same_Emp = case_when(time_change_emp == 1 ~ 1,
+                                is.na(time_change_emp) ~ 0,
+                                TRUE ~ 0),
+           time_change_emp2 = lead(TIME)-TIME, 
+           stay_emp = case_when(time_change_emp2 == 1 ~ 1,
+                               is.na(time_change_emp2) ~ 0, 
+                                TRUE ~ 0)) %>%
+    select(-c(time_change_emp, time_change_emp2))"
+    writeLines(qry_to_disp)
+}
+
