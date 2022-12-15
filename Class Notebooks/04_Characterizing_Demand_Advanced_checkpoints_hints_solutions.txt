@@ -1,0 +1,44 @@
+######################### CHECKPOINT 1 #########################
+check_1.hint <- function() {
+    writeLines("Fill in the blank with the year that you used as part of your cohort exit date.")
+}
+
+check_1.solution <- function() {
+    qry_to_disp = paste0("qry <- \"select *
+from tr_tdc_2022.dbo.employer_yearly_agg
+where year = 2018\"")
+    writeLines(qry_to_disp)
+}
+
+######################### CHECKPOINT 2 #########################
+check_2.hint <- function() {
+writeLines("Fill in the blank with the appropriate value for k based on the graph you created above. We encourage you to choose a number close to the inflection point.")
+}
+
+check_2.solution <- function() {
+    qry_to_disp = paste0("k=4")
+    writeLines(qry_to_disp)
+}
+
+######################### CHECKPOINT 3 #########################
+
+check_3.hint <- function() {
+    writeLines("
+1. Fill in the first blank with the name of your cohort that you created in `02_Creating_a_cohort_checkpoints.ipynb` (format: team#_cohort_name where # refers to your team number and name refers to your name. You may also go through 02_Creating_a_cohort_checkpoints.ipynb to see what you saved your cohort.)
+
+2.  Fill out the second set of blanks with the quarters corresponding to the first year after exit. For example: If the exit date of your cohort was '2018 Q2', you will fill out these sets of blanks with '2018 Q3', '2018 Q4', '2019 Q1', '2019 Q2' in the blanks provided. However, these dates may change based on how you defined your cohort.
+")
+}
+
+check_3.solution <- function() {
+     qry_to_disp <- "qry <- \"SELECT nb.*, wr.Empr_no, wr.Wage, wr.yr_quarter
+    FROM (tr_tdc_2022.dbo.nb_cohort nb
+    LEFT JOIN 
+    (SELECT SSN, Empr_no, yr_quarter, Wage 
+    FROM tr_tdc_2022.dbo.wages_tanf
+    WHERE yr_quarter IN ('2018 Q3', '2018 Q4','2019 Q1', '2019 Q2')
+    ) wr
+    ON wr.SSN=nb.SSN)\""
+    writeLines(qry_to_disp)
+}
+
