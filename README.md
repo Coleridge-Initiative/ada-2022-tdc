@@ -4,7 +4,7 @@ There was a 2022 Applied Data Analytics training program sponsored by the TANF D
 
 This repository contains the class materials for the TANF Data Collaborative Applied Data Analytics program.
 
-**Datasets Used in the Class:**
+**Data Sources Used for the Class:**
 
 - Indiana Family and Social Services Administration
 - Indiana Department of Workforce Development
